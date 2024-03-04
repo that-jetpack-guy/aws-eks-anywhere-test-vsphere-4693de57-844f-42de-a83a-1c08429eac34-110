@@ -1,0 +1,151 @@
+apiVersion: anywhere.eks.amazonaws.com/v1alpha1
+kind: Cluster
+metadata:
+  annotations:
+    anywhere.eks.amazonaws.com/management-components-version: v0.20.0-dev+build.22
+  name: main-i-04ee4-fc5d9f1
+  namespace: default
+spec:
+  clusterNetwork:
+    cniConfig:
+      cilium: {}
+    pods:
+      cidrBlocks:
+      - 192.168.0.0/16
+    services:
+      cidrBlocks:
+      - 10.96.0.0/12
+  controlPlaneConfiguration:
+    count: 1
+    endpoint:
+      host: 196.18.195.103
+    machineGroupRef:
+      kind: VSphereMachineConfig
+      name: main-i-04ee4-fc5d9f1-cp
+    machineHealthCheck:
+      maxUnhealthy: 100%
+  datacenterRef:
+    kind: VSphereDatacenterConfig
+    name: main-i-04ee4-fc5d9f1
+  eksaVersion: v0.20.0-dev+build.22
+  externalEtcdConfiguration:
+    count: 1
+    machineGroupRef:
+      kind: VSphereMachineConfig
+      name: main-i-04ee4-fc5d9f1-etcd
+  gitOpsRef:
+    kind: FluxConfig
+    name: eksa-test
+  kubernetesVersion: "1.28"
+  machineHealthCheck:
+    maxUnhealthy: 100%
+    nodeStartupTimeout: 10m0s
+    unhealthyMachineTimeout: 5m0s
+  managementCluster:
+    name: main-i-04ee4-fc5d9f1
+  workerNodeGroupConfigurations:
+  - count: 1
+    machineGroupRef:
+      kind: VSphereMachineConfig
+      name: main-i-04ee4-fc5d9f1
+    machineHealthCheck:
+      maxUnhealthy: 40%
+    name: md-0
+
+---
+apiVersion: anywhere.eks.amazonaws.com/v1alpha1
+kind: VSphereDatacenterConfig
+metadata:
+  name: main-i-04ee4-fc5d9f1
+  namespace: default
+spec:
+  datacenter: SDDC-Datacenter
+  insecure: true
+  network: /SDDC-Datacenter/network/sddc-cgw-network-3
+  server: 196.18.64.136
+  thumbprint: ""
+
+---
+apiVersion: anywhere.eks.amazonaws.com/v1alpha1
+kind: VSphereMachineConfig
+metadata:
+  name: main-i-04ee4-fc5d9f1
+  namespace: default
+spec:
+  cloneMode: fullClone
+  datastore: /SDDC-Datacenter/datastore/WorkloadDatastore
+  diskGiB: 25
+  folder: /SDDC-Datacenter/vm
+  memoryMiB: 8192
+  numCPUs: 2
+  osFamily: ubuntu
+  resourcePool: /SDDC-Datacenter/host/Cluster-1/Resources/Compute-ResourcePool
+  template: /SDDC-Datacenter/vm/Templates/kubernetes-1-28-eks-15-ubuntu
+  users:
+  - name: ec2-user
+    sshAuthorizedKeys:
+    - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDBf1/Emrhv/E5r1us9kaW+I0rvdDWIWCgVSw+OGQbQ4ofvQbTp+AVswOqGDccAaZ2yJhiL/r5nRz5ioCqMWGWsoGAwxlCNmAU3/SeQOloNNQwQ872wexJDWX13wc4YvxHdxMQV1zkAXpHe2tz5r4RFG+kB7P87RawLp2f+qIRUyviW8YGk8o7aTfhOG0NVjeqFH+HMxCY/J6ubaxlSiiJGxKDfOuRAoZMzkV98rqJqxwUjmt4O/O9nHklbh7V6ivBKvJU4mdiu/Yh0wkOG0FrIO14UF4FyfHh45y8omwrdSfmxlAaqf6G7wo/1SvdWoTVVfBeHWy04Tx18Pb9ltfenUPW17UzYK1arx9xagV6VdZIMjFngSdqlkqjKBMJT99n1lh9L8rdQlUAxSafzFmH8dwAD2Fa9R1zkWYnLZYCCabbjWsXNae6+arx5v2VMB4hrFZVxgh8O/vmPGE2IAsx9SEx9mk8sE+opbWDH3Z5KLoFi4laQz7chCPxg+DmDIqcTTUAgzq6mAFdBZK2gBoBed97kFxD/1Y0YVEmB6RCHBVtQcoJNtmNN5QbIGmnU4SPxNmanmAi1o0kUd73wlvMaa8TfeWrWvMkTNIqg6dwtmhOtRwKyy4DhvZL51iFwdZRygDXuhoZKr7e9MGN1CPht30v/WAP8UsagoO73rFb6HQ==
+      eksae2e@email.com
+
+---
+apiVersion: anywhere.eks.amazonaws.com/v1alpha1
+kind: VSphereMachineConfig
+metadata:
+  annotations:
+    anywhere.eks.amazonaws.com/etcd: "true"
+  name: main-i-04ee4-fc5d9f1-etcd
+  namespace: default
+spec:
+  cloneMode: fullClone
+  datastore: /SDDC-Datacenter/datastore/WorkloadDatastore
+  diskGiB: 25
+  folder: /SDDC-Datacenter/vm
+  memoryMiB: 8192
+  numCPUs: 2
+  osFamily: ubuntu
+  resourcePool: /SDDC-Datacenter/host/Cluster-1/Resources/Compute-ResourcePool
+  template: /SDDC-Datacenter/vm/Templates/kubernetes-1-28-eks-15-ubuntu
+  users:
+  - name: ec2-user
+    sshAuthorizedKeys:
+    - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDBf1/Emrhv/E5r1us9kaW+I0rvdDWIWCgVSw+OGQbQ4ofvQbTp+AVswOqGDccAaZ2yJhiL/r5nRz5ioCqMWGWsoGAwxlCNmAU3/SeQOloNNQwQ872wexJDWX13wc4YvxHdxMQV1zkAXpHe2tz5r4RFG+kB7P87RawLp2f+qIRUyviW8YGk8o7aTfhOG0NVjeqFH+HMxCY/J6ubaxlSiiJGxKDfOuRAoZMzkV98rqJqxwUjmt4O/O9nHklbh7V6ivBKvJU4mdiu/Yh0wkOG0FrIO14UF4FyfHh45y8omwrdSfmxlAaqf6G7wo/1SvdWoTVVfBeHWy04Tx18Pb9ltfenUPW17UzYK1arx9xagV6VdZIMjFngSdqlkqjKBMJT99n1lh9L8rdQlUAxSafzFmH8dwAD2Fa9R1zkWYnLZYCCabbjWsXNae6+arx5v2VMB4hrFZVxgh8O/vmPGE2IAsx9SEx9mk8sE+opbWDH3Z5KLoFi4laQz7chCPxg+DmDIqcTTUAgzq6mAFdBZK2gBoBed97kFxD/1Y0YVEmB6RCHBVtQcoJNtmNN5QbIGmnU4SPxNmanmAi1o0kUd73wlvMaa8TfeWrWvMkTNIqg6dwtmhOtRwKyy4DhvZL51iFwdZRygDXuhoZKr7e9MGN1CPht30v/WAP8UsagoO73rFb6HQ==
+      eksae2e@email.com
+
+---
+apiVersion: anywhere.eks.amazonaws.com/v1alpha1
+kind: VSphereMachineConfig
+metadata:
+  annotations:
+    anywhere.eks.amazonaws.com/control-plane: "true"
+  name: main-i-04ee4-fc5d9f1-cp
+  namespace: default
+spec:
+  cloneMode: fullClone
+  datastore: /SDDC-Datacenter/datastore/WorkloadDatastore
+  diskGiB: 25
+  folder: /SDDC-Datacenter/vm
+  memoryMiB: 8192
+  numCPUs: 2
+  osFamily: ubuntu
+  resourcePool: /SDDC-Datacenter/host/Cluster-1/Resources/Compute-ResourcePool
+  template: /SDDC-Datacenter/vm/Templates/kubernetes-1-28-eks-15-ubuntu
+  users:
+  - name: ec2-user
+    sshAuthorizedKeys:
+    - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDBf1/Emrhv/E5r1us9kaW+I0rvdDWIWCgVSw+OGQbQ4ofvQbTp+AVswOqGDccAaZ2yJhiL/r5nRz5ioCqMWGWsoGAwxlCNmAU3/SeQOloNNQwQ872wexJDWX13wc4YvxHdxMQV1zkAXpHe2tz5r4RFG+kB7P87RawLp2f+qIRUyviW8YGk8o7aTfhOG0NVjeqFH+HMxCY/J6ubaxlSiiJGxKDfOuRAoZMzkV98rqJqxwUjmt4O/O9nHklbh7V6ivBKvJU4mdiu/Yh0wkOG0FrIO14UF4FyfHh45y8omwrdSfmxlAaqf6G7wo/1SvdWoTVVfBeHWy04Tx18Pb9ltfenUPW17UzYK1arx9xagV6VdZIMjFngSdqlkqjKBMJT99n1lh9L8rdQlUAxSafzFmH8dwAD2Fa9R1zkWYnLZYCCabbjWsXNae6+arx5v2VMB4hrFZVxgh8O/vmPGE2IAsx9SEx9mk8sE+opbWDH3Z5KLoFi4laQz7chCPxg+DmDIqcTTUAgzq6mAFdBZK2gBoBed97kFxD/1Y0YVEmB6RCHBVtQcoJNtmNN5QbIGmnU4SPxNmanmAi1o0kUd73wlvMaa8TfeWrWvMkTNIqg6dwtmhOtRwKyy4DhvZL51iFwdZRygDXuhoZKr7e9MGN1CPht30v/WAP8UsagoO73rFb6HQ==
+      eksae2e@email.com
+
+---
+apiVersion: anywhere.eks.amazonaws.com/v1alpha1
+kind: FluxConfig
+metadata:
+  name: eksa-test
+  namespace: default
+spec:
+  branch: aws-eks-anywhere-test-vsphere-4693de57-844f-42de-a83a-1c08429eac34-110
+  clusterConfigPath: aws-eks-anywhere-test-vsphere-4693de57-844f-42de-a83a-1c08429eac34-110
+  git:
+    repositoryUrl: ssh://git@github.com/that-jetpack-guy/aws-eks-anywhere-test-vsphere-4693de57-844f-42de-a83a-1c08429eac34-110.git
+  systemNamespace: default
+
+---
